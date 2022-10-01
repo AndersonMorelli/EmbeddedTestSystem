@@ -75,10 +75,10 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.pushAdicionarStep = QtWidgets.QPushButton(self.verticalFrame)
-        self.pushAdicionarStep.setMinimumSize(QtCore.QSize(0, 40))
-        self.pushAdicionarStep.setObjectName("pushAdicionarStep")
-        self.verticalLayout_3.addWidget(self.pushAdicionarStep)
+        #self.pushAdicionarStep = QtWidgets.QPushButton(self.verticalFrame)
+        #self.pushAdicionarStep.setMinimumSize(QtCore.QSize(0, 40))
+        #self.pushAdicionarStep.setObjectName("pushAdicionarStep")
+        #self.verticalLayout_3.addWidget(self.pushAdicionarStep)
         self.pushRemoveStep = QtWidgets.QPushButton(self.verticalFrame)
         self.pushRemoveStep.setMinimumSize(QtCore.QSize(0, 40))
         self.pushRemoveStep.setObjectName("pushRemoveStep")
@@ -100,23 +100,24 @@ class Ui_MainWindow(object):
         self.pushDigitalOut.setMinimumSize(QtCore.QSize(0, 40))
         self.pushDigitalOut.setObjectName("pushDigitalOut")
         self.verticalLayout_3.addWidget(self.pushDigitalOut)
-        self.pushAnalogOut = QtWidgets.QPushButton(self.verticalFrame)
-        self.pushAnalogOut.setMinimumSize(QtCore.QSize(0, 40))
-        self.pushAnalogOut.setObjectName("pushAnalogOut")
-        self.verticalLayout_3.addWidget(self.pushAnalogOut)
+        #self.pushAnalogOut = QtWidgets.QPushButton(self.verticalFrame)
+        #self.pushAnalogOut.setMinimumSize(QtCore.QSize(0, 40))
+        #self.pushAnalogOut.setObjectName("pushAnalogOut")
+        #self.verticalLayout_3.addWidget(self.pushAnalogOut)
+
+        self.pushDigitalInput = QtWidgets.QPushButton(self.verticalFrame)
+        self.pushDigitalInput.setMinimumSize(QtCore.QSize(0, 40))
+        self.pushDigitalInput.setObjectName("pushDigitalInput")
+        self.verticalLayout_3.addWidget(self.pushDigitalInput)
         self.line = QtWidgets.QFrame(self.verticalFrame)
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line.setObjectName("line")
         self.verticalLayout_3.addWidget(self.line)
-        self.pushDigitalInput = QtWidgets.QPushButton(self.verticalFrame)
-        self.pushDigitalInput.setMinimumSize(QtCore.QSize(0, 40))
-        self.pushDigitalInput.setObjectName("pushDigitalInput")
-        self.verticalLayout_3.addWidget(self.pushDigitalInput)
-        self.pushAnalogInput = QtWidgets.QPushButton(self.verticalFrame)
-        self.pushAnalogInput.setMinimumSize(QtCore.QSize(0, 40))
-        self.pushAnalogInput.setObjectName("pushAnalogInput")
-        self.verticalLayout_3.addWidget(self.pushAnalogInput)
+        #self.pushAnalogInput = QtWidgets.QPushButton(self.verticalFrame)
+        #self.pushAnalogInput.setMinimumSize(QtCore.QSize(0, 40))
+        #self.pushAnalogInput.setObjectName("pushAnalogInput")
+        #self.verticalLayout_3.addWidget(self.pushAnalogInput)
         self.pushPattern = QtWidgets.QPushButton(self.verticalFrame)
         self.pushPattern.setMinimumSize(QtCore.QSize(0, 40))
         self.pushPattern.setObjectName("pushPattern")
@@ -220,6 +221,9 @@ class Ui_MainWindow(object):
         self.listaTestcases.clicked.connect(self.get_testcase_name)
         self.pushSerial.clicked.connect(self.enviar_serial)
         self.pushRemoveStep.clicked.connect(self.remover_teststep)
+        self.pushTimer.clicked.connect(self.timer)
+        self.pushDigitalOut.clicked.connect(self.saida_digital)
+        self.pushDigitalInput.clicked.connect(self.entrada_digital)
 
 
     def retranslateUi(self, MainWindow):
@@ -227,14 +231,14 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushNovo.setText(_translate("MainWindow", "Novo"))
         self.pushAbrir.setText(_translate("MainWindow", "Abrir"))
-        self.pushAdicionarStep.setText(_translate("MainWindow", "Adicionar Step"))
+        #self.pushAdicionarStep.setText(_translate("MainWindow", "Adicionar Step"))
         self.pushRemoveStep.setText(_translate("MainWindow", "Remover Step"))
         self.pushTimer.setText(_translate("MainWindow", "Timer"))
         self.pushSerial.setText(_translate("MainWindow", "Serial"))
         self.pushDigitalOut.setText(_translate("MainWindow", "Saída Digital"))
-        self.pushAnalogOut.setText(_translate("MainWindow", "Saída Analógica"))
+        #self.pushAnalogOut.setText(_translate("MainWindow", "Saída Analógica"))
         self.pushDigitalInput.setText(_translate("MainWindow", "Entrada Digital"))
-        self.pushAnalogInput.setText(_translate("MainWindow", "Entrada Analógica"))
+        #self.pushAnalogInput.setText(_translate("MainWindow", "Entrada Analógica"))
         self.pushPattern.setText(_translate("MainWindow", "Padrão"))
         self.pushOcr.setText(_translate("MainWindow", "O.C.R."))
         self.pushAdicionar.setText(_translate("MainWindow", "Adicionar Testcase"))
@@ -275,6 +279,24 @@ class Ui_MainWindow(object):
         if okPressed and serialInformation != '':
             self.listaTC[self.index_current_testcase].adicionar_teststep('Enviar serial: ',serialInformation)
         self.atualizar_lista_teststeps()
+    def timer(self):
+        timer_value, okPressed = QInputDialog.getText(None,'titulo','label')
+        if okPressed and timer_value != '':
+            self.listaTC[self.index_current_testcase].adicionar_teststep('Wait(ms): ',timer_value)
+        self.atualizar_lista_teststeps()
+    def saida_digital(self):
+        porta, okPorta = QInputDialog.getText(None,'titulo','Digite a porta digital')
+        status, okStatus = QInputDialog.getText(None, 'titulo', 'Digite o status desejado (0-1)')
+        if okPorta and porta.isdigit() and okStatus and (status == '1' or status =='0') :
+            self.listaTC[self.index_current_testcase].adicionar_teststep('Saída Digital: ',str(porta+':'+status))
+        self.atualizar_lista_teststeps()
+    def entrada_digital(self):
+        porta, okPorta = QInputDialog.getText(None,'titulo','Digite a porta digital')
+        status, okStatus = QInputDialog.getText(None, 'titulo', 'Digite o status desejado (0-1)')
+        if okPorta and porta.isdigit() and okStatus and (status == '1' or status =='0') :
+            self.listaTC[self.index_current_testcase].adicionar_teststep('Entrada digital: ',str(porta+':'+status))
+        self.atualizar_lista_teststeps()
+
 
     def get_testcase_name(self):
         current_testcase = self.listaTestcases.currentItem()
@@ -319,10 +341,11 @@ class Ui_MainWindow(object):
         self.atualizar_lista_teststeps()
 
     def salvar(self):
-        print(self.prettify(self.top))
-        #output = open("exemplo.xml", "w")
-        #self.doc.writexml(output, " ", " ", "\n", "UTF-8")
-        #output.close()
+        for testcase in self.listaTC:
+            print(testcase.nome)
+            for teststep in testcase.test_steps:
+                print(teststep.acao)
+                print(teststep.parametro)
 
 
 app = QtWidgets.QApplication(sys.argv)

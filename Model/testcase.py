@@ -15,11 +15,7 @@ class Testcase(object):
 
     def adicionar_teststep(self, acao, parametro):
         self.test_steps.append(TestSequence(acao,parametro))
-        #self.refatorar_teststeps()
+
 
     def remover_teststep(self):
         self.test_steps.pop()
-        #for test in self.test_steps:
-        #    if index == test.index:
-        #        self.test_steps.pop(index)
-        #        self.refatorar_teststeps()
