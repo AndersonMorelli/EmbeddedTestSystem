@@ -10,11 +10,22 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
-
 from PyQt5.QtWidgets import QInputDialog, QLineEdit, QMainWindow
+from Model import testcase
 
+from xml.etree.ElementTree import Element, SubElement, Comment
+from xml.etree import ElementTree
+from xml.dom import minidom
 
 class Ui_MainWindow(object):
+
+    def prettify(elem):
+        """Return a pretty-printed XML string for the Element.
+        """
+        rough_string = ElementTree.tostring(elem, 'utf-8')
+        reparsed = minidom.parseString(rough_string)
+        return reparsed.toprettyxml(indent="  ")
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(770, 680)
@@ -133,21 +144,21 @@ class Ui_MainWindow(object):
         self.pushAdicionar.setFont(font)
         self.pushAdicionar.setObjectName("pushAdicionar")
         self.horizontalLayout_3.addWidget(self.pushAdicionar)
-        self.pushRemover = QtWidgets.QPushButton(self.verticalFrame)
+        self.pushRemoverTestcase = QtWidgets.QPushButton(self.verticalFrame)
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(True)
-        self.pushRemover.setFont(font)
-        self.pushRemover.setObjectName("pushRemover")
-        self.horizontalLayout_3.addWidget(self.pushRemover)
+        self.pushRemoverTestcase.setFont(font)
+        self.pushRemoverTestcase.setObjectName("pushRemoverTestcase")
+        self.horizontalLayout_3.addWidget(self.pushRemoverTestcase)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
-        self.pushAdicionar_2 = QtWidgets.QPushButton(self.verticalFrame)
+        self.pushSalvar = QtWidgets.QPushButton(self.verticalFrame)
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(True)
-        self.pushAdicionar_2.setFont(font)
-        self.pushAdicionar_2.setObjectName("pushAdicionar_2")
-        self.verticalLayout.addWidget(self.pushAdicionar_2)
+        self.pushSalvar.setFont(font)
+        self.pushSalvar.setObjectName("pushSalvar")
+        self.verticalLayout.addWidget(self.pushSalvar)
         self.tabWidget.addTab(self.tab, "")
         self.tab_executar = QtWidgets.QWidget()
         self.tab_executar.setObjectName("tab_executar")
@@ -203,6 +214,13 @@ class Ui_MainWindow(object):
         self.pushNovo.clicked.connect(self.criar_arquivo)
         self.pushAbrir.clicked.connect(self.abrir_arquivo)
         self.pushAdicionar.clicked.connect(self.adicionar_testcase)
+        #self.pushAdicionarStep.clicked.connect(self.adicionar_step)
+        self.pushSalvar.clicked.connect(self.salvar)
+        self.pushRemoverTestcase.clicked.connect(self.remover_testcase)
+        self.listaTestcases.clicked.connect(self.get_testcase_name)
+        self.pushSerial.clicked.connect(self.enviar_serial)
+        self.pushRemoveStep.clicked.connect(self.remover_teststep)
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -220,8 +238,8 @@ class Ui_MainWindow(object):
         self.pushPattern.setText(_translate("MainWindow", "Padrão"))
         self.pushOcr.setText(_translate("MainWindow", "O.C.R."))
         self.pushAdicionar.setText(_translate("MainWindow", "Adicionar Testcase"))
-        self.pushRemover.setText(_translate("MainWindow", "RemoverTestcase"))
-        self.pushAdicionar_2.setText(_translate("MainWindow", "Salvar"))
+        self.pushRemoverTestcase.setText(_translate("MainWindow", "RemoverTestcase"))
+        self.pushSalvar.setText(_translate("MainWindow", "Salvar"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1"))
         self.pushAbrir_2.setText(_translate("MainWindow", "Abrir"))
         self.treeWidget_2.headerItem().setText(0, _translate("MainWindow", "Testcase"))
@@ -231,11 +249,45 @@ class Ui_MainWindow(object):
         self.pushParar_2.setText(_translate("MainWindow", "Parar"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_executar), _translate("MainWindow", "Tab 2"))
 
+    def atualizar_lista_testcases(self):
+        self.listaTestcases.clear()
+        self.contador_testcases = 1
+        for tc in self.listaTC:
+            self.listaTestcases.addItem(str(self.contador_testcases) + '. ' + tc.nome)
+            self.contador_testcases += 1
+    def atualizar_lista_teststeps(self):
+        self.listaTeststeps.clear()
+        for ts in self.listaTC[self.index_current_testcase].test_steps:
+            self.listaTeststeps.addItem(str(ts.acao + ts.parametro))
+
+
+    ##########Parei aqui, falta fazer os steps
+    def carregar_test_steps(self):
+        self.listaTeststeps.clear()
+        for tc in self.listaTC:
+            if tc.nome == self.current_testcase:
+                for ts in tc.test_steps:
+                    self.listaTeststeps.addItem(str(ts.acao + ts.parametro))
+                self.tamanho_testcase = len(tc.test_steps)
+
+    def enviar_serial(self):
+        serialInformation, okPressed = QInputDialog.getText(None,'titulo','label')
+        if okPressed and serialInformation != '':
+            self.listaTC[self.index_current_testcase].adicionar_teststep('Enviar serial: ',serialInformation)
+        self.atualizar_lista_teststeps()
+
+    def get_testcase_name(self):
+        current_testcase = self.listaTestcases.currentItem()
+        self.index_current_testcase = self.listaTestcases.currentRow()
+        if current_testcase is not None:
+            self.current_testcase = current_testcase.text().split('. ')[1]
+            self.carregar_test_steps()
 
 
     def criar_arquivo(self):
         self.listaTestcases.clear()
-        self.contador_testcases = 0
+        self.listaTC = []
+
 
 
     def abrir_arquivo(self):
@@ -247,17 +299,30 @@ class Ui_MainWindow(object):
             self.listaTestcases.addItem(str(contador_testcase_atual) + '. ' + testcase)
             contador_testcase_atual += 1
 
-
     def adicionar_testcase(self):
-        text, okPressed = QInputDialog.getText(None,'titulo','label')
-        if okPressed and text != '':
-            self.contador_testcases += 1
-            self.listaTestcases.addItem(str(self.contador_testcases) + '. ' + text)
-
-
+        testcase_name, okPressed = QInputDialog.getText(None,'titulo','label')
+        if okPressed and testcase_name != '':
+            self.listaTC.append(testcase.Testcase(testcase_name))
+            self.index_current_testcase = (self.listaTC.index(self.listaTC[-1]))
+        self.atualizar_lista_testcases()
 
     def remover_testcase(self):
-        pass
+        self.listaTeststeps.clear()
+        for tc in self.listaTC:
+            if tc.nome == self.current_testcase:
+                self.listaTC.pop(self.listaTC.index(tc))
+                self.atualizar_lista_testcases()
+
+    def remover_teststep(self):
+        print("flango")
+        self.listaTC[self.index_current_testcase].remover_teststep()
+        self.atualizar_lista_teststeps()
+
+    def salvar(self):
+        print(self.prettify(self.top))
+        #output = open("exemplo.xml", "w")
+        #self.doc.writexml(output, " ", " ", "\n", "UTF-8")
+        #output.close()
 
 
 app = QtWidgets.QApplication(sys.argv)
