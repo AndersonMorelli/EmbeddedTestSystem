@@ -10,12 +10,20 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
-from PyQt5.QtWidgets import QInputDialog, QLineEdit, QMainWindow
+from PyQt5.QtWidgets import QInputDialog, QFileDialog
 from Model import testcase
+import xml.etree.cElementTree as ET
+from enum import Enum
 
-from xml.etree.ElementTree import Element, SubElement, Comment
-from xml.etree import ElementTree
 from xml.dom import minidom
+
+class TiposTeste(Enum):
+    TIMER = 'TIMER'
+    SERIAL = 'SERIAL'
+    DOUT = 'DOUT'
+    DIN = 'DIN'
+
+
 
 class Ui_MainWindow(object):
 
@@ -277,26 +285,25 @@ class Ui_MainWindow(object):
     def enviar_serial(self):
         serialInformation, okPressed = QInputDialog.getText(None,'titulo','label')
         if okPressed and serialInformation != '':
-            self.listaTC[self.index_current_testcase].adicionar_teststep('Enviar serial: ',serialInformation)
+            self.listaTC[self.index_current_testcase].adicionar_teststep('Enviar serial: ',serialInformation, TiposTeste.SERIAL)
         self.atualizar_lista_teststeps()
     def timer(self):
         timer_value, okPressed = QInputDialog.getText(None,'titulo','label')
         if okPressed and timer_value != '':
-            self.listaTC[self.index_current_testcase].adicionar_teststep('Wait(ms): ',timer_value)
+            self.listaTC[self.index_current_testcase].adicionar_teststep('Wait(ms): ',timer_value, TiposTeste.TIMER)
         self.atualizar_lista_teststeps()
     def saida_digital(self):
         porta, okPorta = QInputDialog.getText(None,'titulo','Digite a porta digital')
         status, okStatus = QInputDialog.getText(None, 'titulo', 'Digite o status desejado (0-1)')
         if okPorta and porta.isdigit() and okStatus and (status == '1' or status =='0') :
-            self.listaTC[self.index_current_testcase].adicionar_teststep('Saída Digital: ',str(porta+':'+status))
+            self.listaTC[self.index_current_testcase].adicionar_teststep('Saída Digital: ',str(porta+':'+status), TiposTeste.DOUT)
         self.atualizar_lista_teststeps()
     def entrada_digital(self):
         porta, okPorta = QInputDialog.getText(None,'titulo','Digite a porta digital')
         status, okStatus = QInputDialog.getText(None, 'titulo', 'Digite o status desejado (0-1)')
         if okPorta and porta.isdigit() and okStatus and (status == '1' or status =='0') :
-            self.listaTC[self.index_current_testcase].adicionar_teststep('Entrada digital: ',str(porta+':'+status))
+            self.listaTC[self.index_current_testcase].adicionar_teststep('Entrada digital: ',str(porta+':'+status),TiposTeste.DIN)
         self.atualizar_lista_teststeps()
-
 
     def get_testcase_name(self):
         current_testcase = self.listaTestcases.currentItem()
@@ -305,21 +312,31 @@ class Ui_MainWindow(object):
             self.current_testcase = current_testcase.text().split('. ')[1]
             self.carregar_test_steps()
 
-
     def criar_arquivo(self):
         self.listaTestcases.clear()
         self.listaTC = []
 
-
-
     def abrir_arquivo(self):
         self.listaTestcases.clear()
-        arquivo_testcase = ['S','a',',','k']
-        self.contador_testcases = len(arquivo_testcase)
-        contador_testcase_atual = 1
-        for testcase in arquivo_testcase:
-            self.listaTestcases.addItem(str(contador_testcase_atual) + '. ' + testcase)
-            contador_testcase_atual += 1
+        fname = QFileDialog.getOpenFileName(None, 'Open file', '.\\', "XML files (*.xml)")
+        tree = ET.parse(fname[0])
+        root = tree.getroot()
+        if root is not None:
+            self.listaTC = []
+            self.index_current_testcase = 0
+            for tc in root:
+                self.listaTC.append(testcase.Testcase(tc.attrib.get('name')))
+                for ts in tc:
+                    if str(ts.attrib.get('name')) == str(TiposTeste.DOUT.value):
+                        self.listaTC[self.index_current_testcase].adicionar_teststep('Saída Digital: ', ts.get('porta') + ':' + ts.text, TiposTeste.DOUT.value)
+                    elif str(ts.attrib.get('name')) == str(TiposTeste.DIN.value):
+                        self.listaTC[self.index_current_testcase].adicionar_teststep('Entrada digital: ', ts.get('porta') + ':' + ts.text, TiposTeste.DIN.value)
+                    elif str(ts.attrib.get('name')) == str(TiposTeste.SERIAL.value):
+                        self.listaTC[self.index_current_testcase].adicionar_teststep('Enviar serial: ', ts.text, TiposTeste.SERIAL.value)
+                    elif str(ts.attrib.get('name')) == str(TiposTeste.TIMER.value):
+                        self.listaTC[self.index_current_testcase].adicionar_teststep('Wait(ms): ', ts.text, TiposTeste.TIMER.value)
+                self.index_current_testcase += 1
+            self.atualizar_lista_testcases()
 
     def adicionar_testcase(self):
         testcase_name, okPressed = QInputDialog.getText(None,'titulo','label')
@@ -341,11 +358,27 @@ class Ui_MainWindow(object):
         self.atualizar_lista_teststeps()
 
     def salvar(self):
+        root = ET.Element("teste")
+        contador_cases = 1
         for testcase in self.listaTC:
-            print(testcase.nome)
+            doc = ET.SubElement(root, "TC" + str(contador_cases), name=testcase.nome)
+            contador_cases+=1
+            contador_steps = 1
             for teststep in testcase.test_steps:
+                if teststep.tipo  == TiposTeste.TIMER.value:
+                    ET.SubElement(doc, "step_" + str(contador_steps), name="TIMER").text = str(teststep.parametro)
+                elif teststep.tipo == TiposTeste.SERIAL.value:
+                    ET.SubElement(doc, "step_" + str(contador_steps), name="SERIAL").text = str(teststep.parametro)
+                elif teststep.tipo == TiposTeste.DOUT.value:
+                    ET.SubElement(doc, "step_" + str(contador_steps), name="DOUT", porta = teststep.parametro.split(':')[0]).text = teststep.parametro.split(':')[1]
+                elif teststep.tipo == TiposTeste.DIN.value:
+                    ET.SubElement(doc, "step_" + str(contador_steps), name="DIN", porta = teststep.parametro.split(':')[0]).text = teststep.parametro.split(':')[1]
+                tree = ET.ElementTree(root)
+                contador_steps+=1
                 print(teststep.acao)
                 print(teststep.parametro)
+        fname = QFileDialog.getSaveFileName(None, 'Save File')
+        tree.write(fname[0])
 
 
 app = QtWidgets.QApplication(sys.argv)

@@ -1,7 +1,8 @@
 class TestSequence(object):
-    def __init__(self, acao, parametro):
+    def __init__(self, acao, parametro, tipo):
         self.acao = acao
         self.parametro = parametro
+        self.tipo = tipo
 
 class Testcase(object):
     def __init__(self, nome, test_steps = None):
@@ -13,8 +14,8 @@ class Testcase(object):
         for test in self.test_steps:
             test.index = i
 
-    def adicionar_teststep(self, acao, parametro):
-        self.test_steps.append(TestSequence(acao,parametro))
+    def adicionar_teststep(self, acao, parametro, tipo):
+        self.test_steps.append(TestSequence(acao,parametro,tipo))
 
 
     def remover_teststep(self):
