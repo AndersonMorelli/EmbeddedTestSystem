@@ -232,7 +232,7 @@ class Ui_MainWindow(object):
         self.pushTimer.clicked.connect(self.timer)
         self.pushDigitalOut.clicked.connect(self.saida_digital)
         self.pushDigitalInput.clicked.connect(self.entrada_digital)
-
+        #self.pushPattern.clicked.connect(self.criar_pattern)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -379,6 +379,12 @@ class Ui_MainWindow(object):
                 print(teststep.parametro)
         fname = QFileDialog.getSaveFileName(None, 'Save File')
         tree.write(fname[0])
+
+        def criar_pattern(self):
+            QtWidgets.QWidget()
+            pass
+
+
 
 
 app = QtWidgets.QApplication(sys.argv)
