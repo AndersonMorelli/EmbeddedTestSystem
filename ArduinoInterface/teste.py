@@ -3,6 +3,8 @@ from enum import Enum
 import time
 import pyfirmata
 import cv2
+import numpy as np
+from matplotlib import pyplot as plt
 cam_port = 0
 
 
@@ -55,19 +57,28 @@ if root is not None:
             elif str(ts.attrib.get('name')) == str(TiposTeste.DIN.value):
                 pass
             elif str(ts.attrib.get('name')) == str(TiposTeste.PATTERN.value):
-                golden = cv2.imread(ts.attrib.get('file_name'),0)
+                template = cv2.imread(ts.attrib.get('file_name'),0)
+                w, h = template.shape[::-1]
+
                 roi_upper_left_x = str(ts.attrib.get('roi_upper_left')).split(';')[0]
                 roi_upper_left_y = str(ts.attrib.get('roi_upper_left')).split(';')[1]
                 roi_lower_right_x = str(ts.attrib.get('roi_lower_right')).split(';')[0]
                 roi_lower_right_y = str(ts.attrib.get('roi_lower_right')).split(';')[1]
-                roi_right_lower = 'teste'
                 frame = cv2.VideoCapture(cam_port)
-                result, image = frame.read()
+                result, imagem = frame.read()
                 if result:
-                    #primeiro procurar pela gondem na imagem inteira permitindo somente um resultado positivo e depois verificar se essa uma ocorrência está dentro do roi
-                    #exemplo (substituir pelos rois)
-                    cropped_image = result[80:280, 150:330]
+                    imagem_cinza = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
+                    res = cv2.matchTemplate(imagem_cinza, template, cv2.TM_CCOEFF_NORMED)
+                    threshold = 0.8
+                    loc = np.where(res >= threshold)
+                    for pt in zip(*loc[::-1]):
+                        if len(loc[0] == 1) and (pt[0] >= roi_upper_left_x and pt[1] >= roi_upper_left_y and pt[0]+w <= roi_lower_right_x and pt[1]+h <= roi_lower_right_y):
+                            cv2.rectangle(imagem, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
+                            status = True
+                        else:
+                            status = False
+                    cv2.rectangle(imagem, (roi_upper_left_x, roi_upper_left_y), (roi_lower_right_x, roi_lower_right_y),(255, 0, 0), 2)
+                    cv2.imwrite('res.png', imagem)
 
-                pass
             elif str(ts.attrib.get('name')) == str(TiposTeste.OCR.value):
                 pass
