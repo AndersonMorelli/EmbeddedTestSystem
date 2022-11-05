@@ -12,6 +12,23 @@ from PyQt5 import QtCore, QtWidgets
 import sys
 
 import keyboard
+import RPi.GPIO as gpio
+pin_saida = 16
+pin_concedido = 20
+pin_negado = 21
+
+
+
+gpio.setmode(gpio.BCM)
+
+gpio.setup(pin_concedido, gpio.IN, pull_up_down=gpio.PUD_DOWN)
+gpio.setup(pin_negado, gpio.IN, pull_up_down=gpio.PUD_DOWN)
+'''
+gpio.setup(16, gpio.OUT) # Usei 18 pois meu setmode é BCM, se estive usando BOARD seria 12
+gpio.output(16, gpio.HIGH)
+gpio.output(16, gpio.LOW)
+'''
+
 
 
 class Ui_MainWindow(object):
@@ -75,12 +92,15 @@ class Ui_MainWindow(object):
 
 
     def varrerGPIO(self):
-        if keyboard.is_pressed("a"):
+        if keyboard.is_pressed("a") or gpio.input(pin_negado) == 1:
             self.acesso_negado.raise_()
-        elif keyboard.is_pressed("b"):
+        elif keyboard.is_pressed("b") or gpio.input(pin_concedido) == 1:
             self.acesso_concedido.raise_()
         else:
             self.label_principal.raise_()
+
+        gpio.cleanup()
+        exit()
 
 app = QtWidgets.QApplication(sys.argv)
 MainWindow = QtWidgets.QMainWindow()
