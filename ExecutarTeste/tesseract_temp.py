@@ -6,7 +6,7 @@ from PIL import Image
 ocr.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # tipando a leitura para os canais de ordem RGB
-imagem = Image.open('concedido.png').convert('RGB')
+imagem = Image.open('teste.jpg').convert('RGB')
 
 # convertendo em um array editável de numpy[x, y, CANALS]
 npimagem = np.asarray(imagem).astype(np.uint8)  

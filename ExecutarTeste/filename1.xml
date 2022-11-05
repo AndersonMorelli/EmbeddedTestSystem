@@ -6,6 +6,7 @@
 		<step_4 name="TIMER">2000</step_4>
 		<step_5 name="DOUT" porta="11">0</step_5>
 		<step_6 name="PATTERN" filename="teste.png" roi_upper_left="0;0" roi_lower_right="0;0"></step_6>
-		<step_7 name="TIMER">2000</step_7>
+		<step_7 name="OCR" filename="teste.png" roi_upper_left="0;0" roi_lower_right="0;0" texto="'ACESSO NEGADO'"></step_7>
+		<step_8 name="TIMER">2000</step_8>
 	</TC1>
 </teste>

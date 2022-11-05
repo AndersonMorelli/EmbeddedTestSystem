@@ -1,0 +1,7 @@
+<teste>
+	<TC1 name="a">
+		<step_1 name="DOUT" porta="13">1</step_1>
+		<step_2 name="TIMER">10000</step_2>
+		<step_3 name="DOUT" porta="13">0</step_3>
+	</TC1>
+</teste>
