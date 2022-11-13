@@ -18,15 +18,22 @@ in_concedido = 0
 in_negado = 5
 out_rele = 13
 
-arduino = pyfirmata.Arduino("COM5")
+try:
+    arduino = pyfirmata.Arduino("COM5")
+except:
+    print('Arduino não conectado.')
+    arduino_conectado = False
+else:
+    arduino_conectado = True
 
-arduino.digital[out_rele].mode = pyfirmata.OUTPUT
+if arduino_conectado:
+    arduino.digital[out_rele].mode = pyfirmata.OUTPUT
 
-it = pyfirmata.util.Iterator(arduino)
-it.start()
-arduino.analog[in_concedido].enable_reporting()
-arduino.analog[in_negado].enable_reporting()
-rele = arduino.get_pin('d:13:o')
+    it = pyfirmata.util.Iterator(arduino)
+    it.start()
+    arduino.analog[in_concedido].enable_reporting()
+    arduino.analog[in_negado].enable_reporting()
+    rele = arduino.get_pin('d:13:o')
 
 
 
@@ -92,18 +99,26 @@ class Ui_MainWindow(object):
 
 
     def varrerGPIO(self):
-        concedido = arduino.analog[in_concedido].read()
-        negado = arduino.analog[in_negado].read()
+        if arduino_conectado:
+            concedido = arduino.analog[in_concedido].read()
+            negado = arduino.analog[in_negado].read()
+            if keyboard.is_pressed("a") or negado == 0:
+                self.acesso_negado.raise_()
+                rele.write(0)
+            elif keyboard.is_pressed("b") or concedido == 0:
+                self.acesso_concedido.raise_()
+                rele.write(1)
+            else:
+                self.label_principal.raise_()
+                rele.write(0)
 
-        if keyboard.is_pressed("a") or negado == 0:
-            self.acesso_negado.raise_()
-            rele.write(0)
-        elif keyboard.is_pressed("b") or concedido == 0:
-            self.acesso_concedido.raise_()
-            rele.write(1)
         else:
-            self.label_principal.raise_()
-            rele.write(0)
+            if keyboard.is_pressed("a"):
+                self.acesso_negado.raise_()
+            elif keyboard.is_pressed("b"):
+                self.acesso_concedido.raise_()
+            else:
+                self.label_principal.raise_()
 
 
 app = QtWidgets.QApplication(sys.argv)
