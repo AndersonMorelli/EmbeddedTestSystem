@@ -4,8 +4,7 @@ import time
 import pyfirmata
 import cv2
 import numpy as np
-import pytesseract as ocr
-import tesseract_temp
+from ImageProcessing import tesseract_temp
 
 cam_port = 0
 #ocr.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -96,7 +95,7 @@ if root is not None:
 
             elif str(ts.attrib.get('name')) == str(TiposTeste.OCR.value):
                 roi = [int(ts.attrib.get('left')), int(ts.attrib.get('top')), int(ts.attrib.get('right')), int(ts.attrib.get('botton'))]
-                resultado = tesseract_temp.testar(roi, str(ts.attrib.get('texto')),str(ts.attrib.get('filename')))
+                resultado = tesseract_temp.testar(roi, str(ts.attrib.get('texto')), str(ts.attrib.get('filename')))
                 if resultado == False:
                     resultado_teste = 'FAIL ||| '
                     complemento = ' Texto não encontrado'
