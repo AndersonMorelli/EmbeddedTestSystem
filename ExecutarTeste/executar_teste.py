@@ -5,17 +5,21 @@ import pyfirmata
 import cv2
 import numpy as np
 import pytesseract as ocr
-from matplotlib import pyplot as plt
-from PIL import Image
+import tesseract_temp
+
 cam_port = 0
-ocr.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+#ocr.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+try:
+    placa = pyfirmata.Arduino("COM5")
+except:
+    print('Arduino não conectado.')
+    arduino_conectado = False
+else:
+    arduino_conectado = True
 
 
-
-porta_arduino = 'COM4' #Configuramos a porta como a porta COM4. Esta configuração deve ser alterada caso sua placa não se configure nesta porta.
-placa = pyfirmata.Arduino(porta_arduino) #Criamos a variável board que realizará os comandos a partir daqui
-
-fname = 'teste_arduino.xml'
+fname = 'tesseract.xml'
 tree = ET.parse(fname)
 class TiposTeste(Enum):
     TIMER = 'TIMER'
@@ -28,17 +32,18 @@ class TiposTeste(Enum):
 lista_portas = []
 
 root = tree.getroot()
-if root is not None:
-    for tc in root:
-        for ts in tc:
-            if str(ts.attrib.get('name')) == str(TiposTeste.DOUT.value):
-                if str(ts.attrib.get('name')) not in lista_portas:
-                    placa.digital[int(ts.attrib.get('porta'))].mode = pyfirmata.OUTPUT
-            if str(ts.attrib.get('name')) == str(TiposTeste.DIN.value):
-                if str(ts.attrib.get('name')) not in lista_portas:
-                    placa.digital[int(ts.attrib.get('porta'))].mode = pyfirmata.INPUT
-it = pyfirmata.util.Iterator(placa)
-it.start()
+if arduino_conectado:
+    if root is not None:
+        for tc in root:
+            for ts in tc:
+                if str(ts.attrib.get('name')) == str(TiposTeste.DOUT.value):
+                    if str(ts.attrib.get('name')) not in lista_portas:
+                        placa.digital[int(ts.attrib.get('porta'))].mode = pyfirmata.OUTPUT
+                if str(ts.attrib.get('name')) == str(TiposTeste.DIN.value):
+                    if str(ts.attrib.get('name')) not in lista_portas:
+                        placa.digital[int(ts.attrib.get('porta'))].mode = pyfirmata.INPUT
+    it = pyfirmata.util.Iterator(placa)
+    it.start()
 
 if root is not None:
     contador_tc = 0
@@ -46,6 +51,7 @@ if root is not None:
         print("Testcase " + str(contador_tc) + ': ' + tc.attrib.get('name'))
         contador_ts = 0
         for ts in tc:
+            complemento=''
             resultado_teste = 'PASS ||| '
             if str(ts.attrib.get('name')) == str(TiposTeste.TIMER.value):
                 #print(ts.attrib.get('name') + ' --- ' + ts.text)
@@ -53,8 +59,9 @@ if root is not None:
                 time.sleep(int(ts.text)/1000)
             elif str(ts.attrib.get('name')) == str(TiposTeste.DOUT.value):
                 #print(ts.attrib.get('name') + ' --- ' +'Porta: ' + ts.attrib.get('porta') + ' Valor: '+ ts.text)
-                placa.digital[int(ts.attrib.get('porta'))].write(int(ts.text))
-                complemento = ' Porta: ' + ts.attrib.get('porta') + ' Valor: ' + ts.text
+                if arduino_conectado:
+                    placa.digital[int(ts.attrib.get('porta'))].write(int(ts.text))
+                    complemento = ' Porta: ' + ts.attrib.get('porta') + ' Valor: ' + ts.text
             elif str(ts.attrib.get('name')) == str(TiposTeste.SERIAL.value):
                 pass
             elif str(ts.attrib.get('name')) == str(TiposTeste.DIN.value):
@@ -88,29 +95,13 @@ if root is not None:
                     complemento = 'Problema com a câmera'
 
             elif str(ts.attrib.get('name')) == str(TiposTeste.OCR.value):
-                roi_upper_left_x = str(ts.attrib.get('roi_upper_left')).split(';')[0]
-                roi_upper_left_y = str(ts.attrib.get('roi_upper_left')).split(';')[1]
-                roi_lower_right_x = str(ts.attrib.get('roi_lower_right')).split(';')[0]
-                roi_lower_right_y = str(ts.attrib.get('roi_lower_right')).split(';')[1]
-                '''left = 30
-                top = 265
-                right = 450
-                bottom = 340'''
-                # tipando a leitura para os canais de ordem RGB
-                frame = cv2.VideoCapture(cam_port)
-                result, imagem = frame.read()
-                if result:
-                    cropped = imagem.crop((roi_upper_left_x, roi_upper_left_y, roi_lower_right_x, roi_lower_right_y))
-                    cropped.show()
-                    phrase = ocr.image_to_string(cropped, lang='por')
-                    if str(phrase).strip() != ts.attrib.get('texto').strip():
-                        resultado_teste = 'FAIL ||| '
-                else:
-                    complemento = 'Problema com a câmera'
+                roi = [int(ts.attrib.get('left')), int(ts.attrib.get('top')), int(ts.attrib.get('right')), int(ts.attrib.get('botton'))]
+                resultado = tesseract_temp.testar(roi, str(ts.attrib.get('texto')),str(ts.attrib.get('filename')))
+                if resultado == False:
+                    resultado_teste = 'FAIL ||| '
+                    complemento = ' Texto não encontrado'
 
 
-                # impressão do resultado
-                print("Frase: " + phrase)
             #Exibe o resultado do teststep
             print(resultado_teste + "Step " + str(contador_ts) + ': ' + ts.attrib.get('name') + complemento)
 
