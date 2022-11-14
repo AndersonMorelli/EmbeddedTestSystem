@@ -1,0 +1,5 @@
+<teste>
+	<TC1 name="a">
+		<step_1 name="PATTERN" template="./Fotos/cadeado_fechado.jpg" imagem="./Fotos/negado.jpg"  left="400" top="5" right="1200" botton="720" texto="CONTROLE DE ACESSO"></step_1>
+	</TC1>
+</teste>
