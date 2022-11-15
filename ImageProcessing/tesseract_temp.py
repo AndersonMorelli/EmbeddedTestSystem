@@ -1,7 +1,9 @@
 import pytesseract as ocr
 import numpy as np
 import cv2
+import capturar_frame
 from itertools import combinations
+
 
 from PIL import Image
 
@@ -21,8 +23,8 @@ def testar(roi, texto, imagem_path = None):
     if imagem_path is not None:
         imagem = Image.open(imagem_path).convert('RGB')
     else:
-        #Preciso colocar a captura da imagem pela camera aqui dentro
-        pass
+        imagem = capturar_frame.capturar()
+
     left = vetor_passar[0]
     top = vetor_passar[1]
     right = vetor_passar[2]
@@ -63,4 +65,5 @@ def testar(roi, texto, imagem_path = None):
 
             if phrase.strip() == texto:
                 resultado = True
+    cv2.imwrite('tesseraact.png', imagem)
     return resultado

@@ -4,6 +4,7 @@ import time
 import pyfirmata
 from ImageProcessing import tesseract_temp
 from ImageProcessing import pattern
+from ImageProcessing import capturar_frame
 
 try:
     placa = pyfirmata.Arduino("COM5")

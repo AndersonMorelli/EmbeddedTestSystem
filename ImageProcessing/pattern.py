@@ -1,11 +1,12 @@
 import numpy as np
 import cv2
+import capturar_frame
 from itertools import combinations
 
 from PIL import Image
 
 def testar(roi, template_path, imagem_path = None):
-    cam_port = 0
+    #cam_port = 0
     resultado = False
     template = cv2.imread(template_path, 0)
     w, h = template.shape[::-1]
@@ -16,7 +17,7 @@ def testar(roi, template_path, imagem_path = None):
     roi_lower_right_y = roi[3]
     result = False
     if imagem_path is None:
-        frame = cv2.VideoCapture(cam_port)
+        frame = capturar_frame.capturar()
         result, imagem = frame.read()
     else:
         imagem = cv2.imread(imagem_path)
