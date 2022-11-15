@@ -66,8 +66,9 @@ if root is not None:
 
             elif str(ts.attrib.get('name')) == str(TiposTeste.PATTERN.value):
                 roi = [int(ts.attrib.get('left')), int(ts.attrib.get('top')), int(ts.attrib.get('right')), int(ts.attrib.get('botton'))]
-                resultado = pattern.testar(roi, str(ts.attrib.get('template')), str(ts.attrib.get('imagem')))
-                if resultado == False:
+                imagem = capturar_frame.capturar()
+                resultado = pattern.testar(roi, str(ts.attrib.get('template')), imagem)
+                if resultado[0] == False:
                     resultado_teste = 'FAIL ||| '
                     complemento = ' Template não encontrado'
 

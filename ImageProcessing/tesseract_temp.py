@@ -1,7 +1,7 @@
 import pytesseract as ocr
 import numpy as np
 import cv2
-import capturar_frame
+#import capturar_frame
 from itertools import combinations
 
 
@@ -22,8 +22,8 @@ def testar(roi, texto, imagem_path = None):
     # tipando a leitura para os canais de ordem RGB
     if imagem_path is not None:
         imagem = Image.open(imagem_path).convert('RGB')
-    else:
-        imagem = capturar_frame.capturar()
+    #else:
+        #imagem = capturar_frame.capturar()
 
     left = vetor_passar[0]
     top = vetor_passar[1]
