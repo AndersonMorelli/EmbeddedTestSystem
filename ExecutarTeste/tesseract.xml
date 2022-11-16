@@ -1,10 +1,5 @@
 <teste>
 	<TC1 name="a">
-		<step_1 name="OCR" filename="./Fotos/idle.jpg"  left="320" top="150" right="1200" botton="720" texto="CONTROLE DE ACESSO"></step_1>
-		<step_2 name="OCR" filename="./Fotos/negado.jpg"  left="280" top="730" right="1300" botton="870" texto="ACESSO NEGADO"></step_2>
-		<step_3 name="OCR" filename="./Fotos/concedido.jpg"  left="180" top="730" right="1400" botton="870" texto="ACESSO CONCEDIDO"></step_3>
-		<step_4 name="OCR" filename="./Fotos/negado.jpg"  left="280" top="730" right="1300" botton="870" texto="Teste"></step_4>
-		<step_5 name="OCR" filename="./Fotos/concedido.jpg"  left="280" top="730" right="1300" botton="870" texto="ACESSO NEGADO"></step_5>
-		<step_6 name="OCR" filename="./Fotos/idle.jpg"  left="280" top="730" right="1300" botton="870" texto="frango"></step_6>
+		<step_5 name="OCR" filename=""  left="300" top="870" right="1700" botton="995" texto="ACESSO NEGADO"></step_5>
 	</TC1>
 </teste>

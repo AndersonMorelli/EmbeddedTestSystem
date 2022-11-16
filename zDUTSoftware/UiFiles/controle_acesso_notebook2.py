@@ -14,15 +14,15 @@ import sys
 import keyboard
 import pyfirmata
 
-in_concedido = 0
-in_negado = 5
-out_rele = 13
+pin_concedido = 7
+pin_negado = 8
+pin_rele = 13
 
 flag_negado = 0
 flag_concedido = 0
 
 try:
-    arduino = pyfirmata.Arduino("COM3")
+    arduino = pyfirmata.Arduino("COM4")
 except:
     print('Arduino não conectado.')
     arduino_conectado = False
@@ -30,15 +30,15 @@ else:
     arduino_conectado = True
 
 if arduino_conectado:
-    arduino.digital[out_rele].mode = pyfirmata.OUTPUT
-
+    concedido = arduino.digital[pin_concedido]
+    negado = arduino.digital[pin_negado]
+    rele = arduino.digital[pin_rele]
     it = pyfirmata.util.Iterator(arduino)
     it.start()
-    arduino.analog[in_concedido].enable_reporting()
-    arduino.analog[in_negado].enable_reporting()
-    rele = arduino.get_pin('d:13:o')
 
-
+    concedido.mode = pyfirmata.INPUT
+    negado.mode = pyfirmata.INPUT
+    rele.mode = pyfirmata.OUTPUT
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -50,8 +50,8 @@ class Ui_MainWindow(object):
         MainWindow.setMaximumSize(QtCore.QSize(resolution[0], resolution[1]))
         MainWindow.setAutoFillBackground(True)
 
-        self.flag_concedido = 0
-        self.flag_negado = 0
+        self.previous_concedido_state = 0
+        self.previous_negado_state = 0
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setEnabled(True)
@@ -93,7 +93,7 @@ class Ui_MainWindow(object):
         self.label_principal.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.timer = QtCore.QTimer()
-        self.fps = 60
+        self.fps = 1
         self.timer.setInterval(int(1000/self.fps))
         self.timer.timeout.connect(self.varrerGPIO)
         self.timer.start()
@@ -106,23 +106,21 @@ class Ui_MainWindow(object):
 
 
     def varrerGPIO(self):
+        print('frango')
         if arduino_conectado:
-            concedido = arduino.analog[in_concedido].read()
-            negado = arduino.analog[in_negado].read()
-            #print('negado = '+str(negado)+ '---- conce = ' + str(concedido))
+            concedido_state = concedido.read()
+            negado_state = negado.read()
 
-            if (keyboard.is_pressed("a") or negado == 0) and self.flag_concedido != 1:
+
+            #print('negado = '+str(negado)+ '---- conce = ' + str(concedido))
+            if (keyboard.is_pressed("a") or negado_state == 1):
                 self.acesso_negado.raise_()
-                self.flag_negado = 1
                 rele.write(0)
-            elif (keyboard.is_pressed("b") or concedido == 0) and self.flag_negado != 1:
+            elif (keyboard.is_pressed("b") or concedido_state == 1):
                 self.acesso_concedido.raise_()
-                self.flag_concedido = 1
                 rele.write(1)
             else:
                 self.label_principal.raise_()
-                self.flag_concedido = 0
-                self.flag_negado = 0
                 rele.write(0)
 
         else:

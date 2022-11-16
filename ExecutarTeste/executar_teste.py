@@ -17,8 +17,8 @@ fpath = '../aTeste/'
 templates_path = fpath+'templates/'
 report_path = fpath+'report/'
 
-fname = 'tesseract.xml'
-tree = ET.parse(fname)
+fname = 'apresentacao.xml'
+tree = ET.parse(fpath+fname)
 
 class TiposTeste(Enum):
     TIMER = 'TIMER'

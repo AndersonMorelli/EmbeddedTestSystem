@@ -1,5 +1,5 @@
 <teste>
 	<TC1 name="a">
-		<step_1 name="PATTERN" template="cadeado_fechado.jpg" imagem="./Fotos/negado.jpg"  left="400" top="5" right="1200" botton="720" texto="CONTROLE DE ACESSO"></step_1>
+		<step_1 name="PATTERN" template="cadeado_fechado.jpg" imagem="" left="650" top="60" right="1400" botton="850"></step_1>
 	</TC1>
 </teste>

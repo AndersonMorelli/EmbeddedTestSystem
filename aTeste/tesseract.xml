@@ -1,5 +1,0 @@
-<teste>
-	<TC1 name="a">
-		<step_1 name="OCR" filename="./Fotos/idle.jpg"  left="320" top="150" right="1200" botton="720" texto="CONTROLE DE ACESSO"></step_1>
-	</TC1>
-</teste>

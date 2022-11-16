@@ -14,11 +14,16 @@ def testar(roi, template, imagem, report_path):
     roi_upper_left_y = roi[1]
     roi_lower_right_x = roi[2]
     roi_lower_right_y = roi[3]
-    result = False
+
+    ### GRAVAR TEMPLATE ###
+    #cropped_image = imagem[roi_upper_left_y+30:roi_lower_right_y-30, roi_upper_left_x+70:roi_lower_right_x-70]
+    #cv2.imshow('aaa',cropped_image)
+    #cv2.imwrite('cadeado_aberto.jpg', cropped_image)
+    #######################
 
     imagem_cinza = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
     res = cv2.matchTemplate(imagem_cinza, template, cv2.TM_CCOEFF_NORMED)
-    threshold = 0.9
+    threshold = 0.8
     loc = np.where(res >= threshold)
     for pt in zip(*loc[::-1]):
         if (pt[0] >= roi_upper_left_x and pt[1] >= roi_upper_left_y and pt[0] + w <= roi_lower_right_x and pt[1] + h <= roi_lower_right_y):
