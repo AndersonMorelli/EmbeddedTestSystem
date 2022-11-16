@@ -106,7 +106,6 @@ class Ui_MainWindow(object):
 
 
     def varrerGPIO(self):
-        print('frango')
         if arduino_conectado:
             concedido_state = concedido.read()
             negado_state = negado.read()
