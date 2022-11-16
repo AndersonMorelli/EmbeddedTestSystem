@@ -4,11 +4,10 @@ from itertools import combinations
 
 from PIL import Image
 
-def testar(roi, template_path, imagem):
-    #cam_port = 0
+def testar(roi, template, imagem, report_path):
     resultado = False
+    #print(template_path)
     #template = cv2.imread(template_path, 0)
-    template = cv2.imread(template_path, 0)
     w, h = template.shape[::-1]
 
     roi_upper_left_x = roi[0]
@@ -29,5 +28,6 @@ def testar(roi, template_path, imagem):
         else:
             resultado = False
     cv2.rectangle(imagem, (roi_upper_left_x, roi_upper_left_y), (roi_lower_right_x, roi_lower_right_y), (255, 0, 0),2)
-    #cv2.imwrite('res.png', imagem)
-    return (resultado,imagem)
+    cv2.imwrite(report_path +'.jpg', imagem)
+
+    return resultado

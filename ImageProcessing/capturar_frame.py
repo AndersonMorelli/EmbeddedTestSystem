@@ -13,12 +13,5 @@ def capturar():
     img = cv2.imdecode(img_arr, -1)
     #img = imutils.resize(img, width=1000, height=1800)
     return img
-    '''
-    cv2.imshow("Android_cam", img)
-    while True:
-        # Press Esc key to exit
-        if cv2.waitKey(1) == 27:
-            break
-    
-    cv2.destroyAllWindows()
-    '''
+def carregar(path):
+    return cv2.imread(path, 0)

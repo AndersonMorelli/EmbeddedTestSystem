@@ -71,7 +71,7 @@ class Ui_MainWindow(object):
         self.acesso_concedido.setMinimumSize(QtCore.QSize(480, 320))
         self.acesso_concedido.setMaximumSize(QtCore.QSize(480, 320))
         self.acesso_concedido.setAutoFillBackground(False)
-        self.acesso_concedido.setStyleSheet("background-image : url(./Cadeado/CadeadoAberto2.png);")
+        self.acesso_concedido.setStyleSheet("background-image : url(./Cadeado/cadeado_fechado.jpg);")
         self.acesso_concedido.setText("<html><head/><body><p align=\"center\"><span style=\" font-size:26pt; font-weight:700; color:#55ff00;\">ACESSO CONCEDIDO</span></p></body></html>")
         self.acesso_concedido.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
         self.acesso_concedido.setObjectName("acesso_concedido")
