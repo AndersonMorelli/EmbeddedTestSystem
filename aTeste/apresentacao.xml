@@ -1,0 +1,14 @@
+<teste>
+	<TC1 name="Verificação Imagem em Idle">
+		<step_1 name="DOUT" porta="11">0</step_1>
+		<step_2 name="DOUT" porta="11">0</step_2>
+		<step_3 name="TIMER">500</step_3>
+		<step_4 name="OCR" filename=""  left="320" top="150" right="1200" botton="720" texto="CONTROLE DE ACESSO"></step_4>
+	</TC1>
+	<TC2 name="Verificação Acesso Negado">
+		<step_3 name="TIMER">500</step_3>
+	</TC2>
+	<TC3 name="Verificação Acesso Negado">
+		<step_3 name="TIMER">500</step_3>
+	</TC3>
+</teste>

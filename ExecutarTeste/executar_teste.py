@@ -2,6 +2,7 @@ import xml.etree.cElementTree as ET
 from enum import Enum
 import time
 import pyfirmata
+from ImageProcessing import capturar_frame
 from ImageProcessing import tesseract_temp
 from ImageProcessing import pattern
 
@@ -12,8 +13,11 @@ except:
     arduino_conectado = False
 else:
     arduino_conectado = True
+fpath = '../aTeste/'
+templates_path = fpath+'templates/'
+report_path = fpath+'report/'
 
-fname = 'pattern.xml'
+fname = 'tesseract.xml'
 tree = ET.parse(fname)
 
 class TiposTeste(Enum):
@@ -40,11 +44,13 @@ if arduino_conectado:
     it.start()
 
 if root is not None:
-    contador_tc = 1
+    contador_tc = 0
     for tc in root:
+        contador_tc += 1
         print("Testcase " + str(contador_tc) + ': ' + tc.attrib.get('name'))
         contador_ts = 0
         for ts in tc:
+            contador_ts += 1
             complemento=''
             resultado_teste = 'PASS ||| '
             if str(ts.attrib.get('name')) == str(TiposTeste.TIMER.value):
@@ -64,17 +70,20 @@ if root is not None:
 
             elif str(ts.attrib.get('name')) == str(TiposTeste.PATTERN.value):
                 roi = [int(ts.attrib.get('left')), int(ts.attrib.get('top')), int(ts.attrib.get('right')), int(ts.attrib.get('botton'))]
-                resultado = pattern.testar(roi, str(ts.attrib.get('template')), str(ts.attrib.get('imagem')))
+                imagem = capturar_frame.capturar()
+                template = capturar_frame.carregar(str(templates_path + ts.attrib.get('template')))
+                resultado = pattern.testar(roi, template, imagem, report_path+'TC'+str(contador_tc)+'STEP'+str(contador_ts))
                 if resultado == False:
                     resultado_teste = 'FAIL ||| '
-                    complemento = ' Template não encontrado'
+                    complemento = ' Template não encontrado verificar imagem: ' + 'TC'+str(contador_tc)+'STEP'+str(contador_ts)+'.jpg'
 
             elif str(ts.attrib.get('name')) == str(TiposTeste.OCR.value):
                 roi = [int(ts.attrib.get('left')), int(ts.attrib.get('top')), int(ts.attrib.get('right')), int(ts.attrib.get('botton'))]
-                resultado = tesseract_temp.testar(roi, str(ts.attrib.get('texto')), str(ts.attrib.get('filename')))
+                imagem = capturar_frame.capturar()
+                resultado = tesseract_temp.testar(roi, str(ts.attrib.get('texto')), imagem,report_path+'TC'+str(contador_tc)+'STEP'+str(contador_ts))
                 if resultado == False:
                     resultado_teste = 'FAIL ||| '
-                    complemento = ' Texto não encontrado'
+                    complemento = ' Texto não encontrado verificar imagem: ' + 'TC'+str(contador_tc)+'STEP'+str(contador_ts)+'.jpg'
 
             #Exibe o resultado do teststep
             print(resultado_teste + "Step " + str(contador_ts) + ': ' + ts.attrib.get('name') + complemento)
