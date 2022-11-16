@@ -28,8 +28,8 @@ def testar(roi, texto, img, report_path):
     cropped = imagem.crop((left, top, right, bottom))
 
     phrase = ocr.image_to_string(cropped, lang='por')
-    cropped.save('cadeado_aberto.jpg')
-    print(phrase)
+    #cropped.save('cadeado_aberto.jpg')
+    #print(phrase)
     phrase = remove_quebra_linha(phrase)
     if phrase.strip() == texto:
         resultado = True
@@ -42,9 +42,9 @@ def testar(roi, texto, img, report_path):
             # diminuição dos ruidos antes da binarização
             #npimagem[:, :, 0] = 0 # zerando o canal R (RED)
             npimagem[:, :, i[0]] = 0
-            cv2.imshow('kkk', npimagem)
+            #cv2.imshow('kkk', npimagem)
             npimagem[:, :, i[1]] = 0
-            cv2.imshow('kkk2', npimagem)
+            #cv2.imshow('kkk2', npimagem)
 
             # atribuição em escala de cinza
             im = cv2.cvtColor(npimagem, cv2.COLOR_RGB2GRAY)
@@ -61,8 +61,8 @@ def testar(roi, texto, img, report_path):
 
             phrase = ocr.image_to_string(binimagem, lang='por')
             phrase = remove_quebra_linha(phrase)
-            binimagem.show('aaaa')
-            print(phrase)
+            #binimagem.show('aaaa')
+            #print(phrase)
 
 
             if phrase.strip() == texto:

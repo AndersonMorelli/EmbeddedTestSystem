@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 
 # Form implementation generated from reading ui file '.\UiFiles\ControleAcesso.ui'
 #
@@ -15,7 +16,7 @@ import keyboard
 import pyfirmata
 
 pin_concedido = 7
-pin_negado = 8
+pin_negado = 3
 pin_rele = 13
 
 flag_negado = 0
@@ -31,7 +32,7 @@ else:
 
 if arduino_conectado:
     concedido = arduino.digital[pin_concedido]
-    negado = arduino.digital[pin_negado]
+    negado = arduino.analog[pin_negado]
     rele = arduino.digital[pin_rele]
     it = pyfirmata.util.Iterator(arduino)
     it.start()
@@ -93,7 +94,7 @@ class Ui_MainWindow(object):
         self.label_principal.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.timer = QtCore.QTimer()
-        self.fps = 1
+        self.fps = 10
         self.timer.setInterval(int(1000/self.fps))
         self.timer.timeout.connect(self.varrerGPIO)
         self.timer.start()
@@ -110,14 +111,16 @@ class Ui_MainWindow(object):
             concedido_state = concedido.read()
             negado_state = negado.read()
 
-
+            print(str(negado_state))
             #print('negado = '+str(negado)+ '---- conce = ' + str(concedido))
-            if (keyboard.is_pressed("a") or negado_state == 1):
+            if (keyboard.is_pressed("a") or negado_state >= 0.9):
                 self.acesso_negado.raise_()
                 rele.write(0)
+                #time.sleep((5))
             elif (keyboard.is_pressed("b") or concedido_state == 1):
                 self.acesso_concedido.raise_()
                 rele.write(1)
+                #time.sleep((5))
             else:
                 self.label_principal.raise_()
                 rele.write(0)
