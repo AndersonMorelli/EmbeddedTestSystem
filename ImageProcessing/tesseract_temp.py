@@ -3,11 +3,7 @@ import numpy as np
 import cv2
 #import capturar_frame
 from itertools import combinations
-
 from PIL import Image
-
-
-
 
 def remove_quebra_linha(value):
     return ' '.join(value.splitlines())
@@ -20,6 +16,7 @@ def testar(roi, texto, img, report_path):
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     imagem = Image.fromarray(img_rgb)
 
+
     left = vetor_passar[0]
     top = vetor_passar[1]
     right = vetor_passar[2]
@@ -29,6 +26,7 @@ def testar(roi, texto, img, report_path):
 
     phrase = ocr.image_to_string(cropped, lang='por')
     #cropped.save('cadeado_aberto.jpg')
+    #print('---- '+texto)
     #print(phrase)
     phrase = remove_quebra_linha(phrase)
     if phrase.strip() == texto:

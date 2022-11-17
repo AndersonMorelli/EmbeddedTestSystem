@@ -2,30 +2,32 @@
 	<TC1 name="Verificação Imagem em Idle">
 		<step_1 name="DOUT" porta="8">0</step_1>
 		<step_2 name="DOUT" porta="12">0</step_2>
-		<step_3 name="TIMER">500</step_3>
-		<step_4 name="OCR" filename=""  left="500" top="220" right="1500" botton="850" texto="CONTROLE DE ACESSO"></step_4>
-		<step_5 name="TIMER">500</step_5>
-		<step_6 name="DOUT" porta="8">0</step_6>
-		<step_7 name="DOUT" porta="12">0</step_7>
-		<step_8 name="TIMER">5000</step_8>
+		<step_3 name="TIMER">10000</step_3>
+		<step_4 name="OCR" filename=""  left="550" top="200" right="1410" botton="410" texto="CONTROLE"></step_4>
+		<step_5 name="OCR" filename=""  left="650" top="410" right="1340" botton="620" texto="DE"></step_5>
+		<step_6 name="OCR" filename=""  left="500" top="620" right="1440" botton="830" texto="ACESSO"></step_6>
+		<step_7 name="TIMER">500</step_7>
+		<step_9 name="DOUT" porta="8">0</step_9>
+		<step_9 name="DOUT" porta="12">0</step_9>
+		<step_10 name="TIMER">5000</step_10>
 	</TC1>
 	<TC2 name="Verificação Acesso Concedido">
-		<step_1 name="DOUT" porta="8">0</step_1>
-		<step_2 name="DOUT" porta="12">1</step_2>
-		<step_3 name="TIMER">500</step_3>
-		<step_4 name="PATTERN" template="cadeado_aberto.jpg" imagem="" left="650" top="60" right="1400" botton="850"></step_4>
-		<step_5 name="OCR" filename=""  left="300" top="870" right="1700" botton="995" texto="ACESSO CONCEDIDO"></step_5>
+		<step_1 name="DOUT" porta="8">1</step_1>
+		<step_2 name="DOUT" porta="12">0</step_2>
+		<step_3 name="TIMER">1000</step_3>
+		<step_4 name="PATTERN" template="cadeado_aberto.jpg" imagem="" left="630" top="10" right="1350" botton="870"></step_4>
+		<step_5 name="OCR" filename=""  left="300" top="830" right="1700" botton="975" texto="ACESSO CONCEDIDO"></step_5>
 		<step_6 name="TIMER">500</step_6>
 		<step_7 name="DOUT" porta="8">0</step_7>
 		<step_8 name="DOUT" porta="12">0</step_8>
 		<step_9 name="TIMER">5000</step_9>
 	</TC2>
 	<TC3 name="Verificação Acesso Negado">
-		<step_1 name="DOUT" porta="8">1</step_1>
-		<step_2 name="DOUT" porta="12">0</step_2>
-		<step_3 name="TIMER">500</step_3>
-		<step_4 name="PATTERN" template="cadeado_fechado.jpg" imagem="" left="650" top="60" right="1400" botton="850"></step_4>
-		<step_5 name="OCR" filename=""  left="300" top="870" right="1700" botton="995" texto="ACESSO NEGADO"></step_5>
+		<step_1 name="DOUT" porta="8">0</step_1>
+		<step_2 name="DOUT" porta="12">1</step_2>
+		<step_3 name="TIMER">1000</step_3>
+		<step_4 name="PATTERN" template="cadeado_fechado.jpg" imagem="" left="630" top="10" right="1350" botton="870"></step_4>
+		<step_5 name="OCR" filename=""  left="300" top="830" right="1700" botton="975" texto="ACESSO NEGADO"></step_5>
 		<step_6 name="TIMER">500</step_6>
 		<step_7 name="DOUT" porta="8">0</step_7>
 		<step_8 name="DOUT" porta="12">0</step_8>

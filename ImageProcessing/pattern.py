@@ -16,9 +16,9 @@ def testar(roi, template, imagem, report_path):
     roi_lower_right_y = roi[3]
 
     ### GRAVAR TEMPLATE ###
-    #cropped_image = imagem[roi_upper_left_y+30:roi_lower_right_y-30, roi_upper_left_x+70:roi_lower_right_x-70]
+    #cropped_image = imagem[roi_upper_left_y:roi_lower_right_y, roi_upper_left_x:roi_lower_right_x]
     #cv2.imshow('aaa',cropped_image)
-    #cv2.imwrite('cadeado_aberto.jpg', cropped_image)
+    #cv2.imwrite(report_path+'cadeado_aberto.jpg', cropped_image)
     #######################
 
     imagem_cinza = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)

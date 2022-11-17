@@ -7,7 +7,7 @@ from ImageProcessing import tesseract_temp
 from ImageProcessing import pattern
 
 try:
-    placa = pyfirmata.Arduino("COM5")
+    placa = pyfirmata.Arduino("COM4")
 except:
     print('Arduino não conectado.')
     arduino_conectado = False
@@ -44,6 +44,7 @@ if arduino_conectado:
     it.start()
 
 if root is not None:
+    arquivo_report = open(report_path+"Report.txt","w+")
     contador_tc = 0
     for tc in root:
         contador_tc += 1
@@ -75,7 +76,9 @@ if root is not None:
                 resultado = pattern.testar(roi, template, imagem, report_path+'TC'+str(contador_tc)+'STEP'+str(contador_ts))
                 if resultado == False:
                     resultado_teste = 'FAIL ||| '
-                    complemento = ' Template não encontrado verificar imagem: ' + 'TC'+str(contador_tc)+'STEP'+str(contador_ts)+'.jpg'
+                    complemento = ' Template não encontrado, verificar imagem: ' + 'TC'+str(contador_tc)+'STEP'+str(contador_ts)+'.jpg'
+                else:
+                    complemento = ' Template encontrado com sucesso, verificar imagem: ' + 'TC'+str(contador_tc)+'STEP'+str(contador_ts)+'.jpg'
 
             elif str(ts.attrib.get('name')) == str(TiposTeste.OCR.value):
                 roi = [int(ts.attrib.get('left')), int(ts.attrib.get('top')), int(ts.attrib.get('right')), int(ts.attrib.get('botton'))]
@@ -83,8 +86,18 @@ if root is not None:
                 resultado = tesseract_temp.testar(roi, str(ts.attrib.get('texto')), imagem,report_path+'TC'+str(contador_tc)+'STEP'+str(contador_ts))
                 if resultado == False:
                     resultado_teste = 'FAIL ||| '
-                    complemento = ' Texto não encontrado verificar imagem: ' + 'TC'+str(contador_tc)+'STEP'+str(contador_ts)+'.jpg'
+                    complemento = ' Texto (' + str(ts.attrib.get('texto')) + ') não encontrado, verificar imagem: ' + 'TC' + str(contador_tc) + 'STEP' + str(contador_ts) + '.jpg'
+                else:
+                    complemento = ' Texto (' + str(ts.attrib.get('texto')) + ') encontrado com sucesso, verificar imagem: ' + 'TC' + str(contador_tc) + 'STEP' + str(contador_ts) + '.jpg'
+
 
             #Exibe o resultado do teststep
-            print(resultado_teste + "Step " + str(contador_ts) + ': ' + ts.attrib.get('name') + complemento)
+            resultado_final =resultado_teste + "Step " + str(contador_ts) + ': ' + ts.attrib.get('name') + complemento
+            print(resultado_final)
+            arquivo_report.write(resultado_final + "\n")
+        print('-----------------------------------------------------------------------')
+        arquivo_report.write('-----------------------------------------------------------------------')
+
+    from shutil import make_archive
+    make_archive('Report', 'zip', fpath)
 
