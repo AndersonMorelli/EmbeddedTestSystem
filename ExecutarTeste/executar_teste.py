@@ -35,11 +35,8 @@ if arduino_conectado:
         for tc in root:
             for ts in tc:
                 if str(ts.attrib.get('name')) == str(TiposTeste.DOUT.value):
-                    if str(ts.attrib.get('name')) not in lista_portas:
+                    if str(ts.attrib.get('name'))+str(ts.attrib.get('name')) not in lista_portas:
                         placa.digital[int(ts.attrib.get('porta'))].mode = pyfirmata.OUTPUT
-                if str(ts.attrib.get('name')) == str(TiposTeste.DIN.value):
-                    if str(ts.attrib.get('name')) not in lista_portas:
-                        placa.digital[int(ts.attrib.get('porta'))].mode = pyfirmata.INPUT
     it = pyfirmata.util.Iterator(placa)
     it.start()
 
@@ -51,6 +48,7 @@ if root is not None:
         print("Testcase " + str(contador_tc) + ': ' + tc.attrib.get('name'))
         contador_ts = 0
         for ts in tc:
+            time.sleep(0.02)
             contador_ts += 1
             complemento=''
             resultado_teste = 'PASS ||| '
